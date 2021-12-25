@@ -1,4 +1,3 @@
-#from utils.utils import DownloadData, Finance, Penalize, Auxiliar
 from deap import tools, creator, base
 from utils.utils import test, function, ind
 import matplotlib.pyplot as plt
@@ -7,12 +6,12 @@ import utils.elitism as elitism
 import seaborn as sns
 
 #Params
-SIZE = 10
-BOUND_LOW, BOUND_UP =  -6,6
+SIZE = 1
+BOUND_LOW, BOUND_UP =  -2,8
 POPULATION_SIZE = 100
-P_CROSSOVER = 0.5
-P_MUTATION = 0.2  
-MAX_GENERATIONS = 100
+P_CROSSOVER = 1
+P_MUTATION = 1 
+MAX_GENERATIONS = 50
 HALL_OF_FAME_SIZE = 20
 CROWDING_FACTOR = 20.0 
 
@@ -42,8 +41,9 @@ def main():
     hof = tools.HallOfFame(HALL_OF_FAME_SIZE)
 
     # perform the Genetic Algorithm flow with elitism:
-    population, logbook = elitism.eaSimpleWithElitism(population, toolbox, cxpb=P_CROSSOVER, mutpb=P_MUTATION,
-                                              ngen=MAX_GENERATIONS, stats=stats, halloffame=hof, verbose=True)
+    population, logbook, history = elitism.eaSimpleWithElitism(population, toolbox, cxpb=P_CROSSOVER, mutpb=P_MUTATION,
+                                              ngen=MAX_GENERATIONS, stats=stats, halloffame=hof, verbose=False,
+                                              plot = True)
 
     # print info for best solution found:
     best = hof.items[0]
@@ -52,6 +52,7 @@ def main():
     print("-- Best Individual = ", best_individual)
     print("-- Best Fitness = ", best_fitness)
 
+    
     # extract statistics:
     minFitnessValues, meanFitnessValues = logbook.select("min", "avg")
 
@@ -68,6 +69,7 @@ def main():
     x=np.linspace(BOUND_LOW, BOUND_UP, 250)
     plt.plot(x, test(x))
     plt.axvline(x=best_individual, ymin=best_fitness, ymax=1, linestyle="--", color="r")
+    plt.title("Best Individual")
 
     plt.show()
 

@@ -6,7 +6,7 @@ def test(x):
     #    return x**2
    # elif x== 1:
        # return 0
-    return x**2
+    return np.sin(x) + np.sin((10.0 / 3.0) * x)
 
 def function(individual):
     x = individual[0]

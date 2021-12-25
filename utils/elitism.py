@@ -1,13 +1,15 @@
 from deap import tools
 from deap import algorithms
+from utils.utils import test
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 
 def eaSimpleWithElitism(population, toolbox, cxpb, mutpb, ngen, stats=None,
-             halloffame=None, verbose=__debug__):
-    """This algorithm is similar to DEAP eaSimple() algorithm, with the modification that
-    halloffame is used to implement an elitism mechanism. The individuals contained in the
-    halloffame are directly injected into the next generation and are not subject to the
-    genetic operators of selection, crossover and mutation.
-    """
+             halloffame=None, verbose=__debug__, plot=False):
+
+    #Historic data
+    history = {}
     logbook = tools.Logbook()
     logbook.header = ['gen', 'nevals'] + (stats.fields if stats else [])
 
@@ -55,7 +57,22 @@ def eaSimpleWithElitism(population, toolbox, cxpb, mutpb, ngen, stats=None,
         # Append the current generation statistics to the logbook
         record = stats.compile(population) if stats else {}
         logbook.record(gen=gen, nevals=len(invalid_ind), **record)
+        history[gen] = [item for items in population for item in items]
+         
         if verbose:
             print(logbook.stream)
+    
+    df = pd.DataFrame(history.items(), columns = ["Generation", "Individual"])
+    df.to_csv("data/history.csv", sep=",", index=False)
+    
+    if plot:
+        individuals = list(history.values())
+        individuals = np.array(individuals)
+        x=np.linspace(np.min(individuals), np.max(individuals), 250)
 
-    return population, logbook
+        plt.plot(x, test(x))
+        plt.scatter(individuals, test(individuals))
+        plt.title("Individual distribution")
+        plt.show()
+
+    return population, logbook, history
